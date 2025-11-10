@@ -11,7 +11,7 @@ jobs:                       # 3️⃣ Les tâches à faire
     runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
     steps:                  # 5️⃣ Les étapes
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - run: actions/setup-python@v5
       - run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - run: cd backend && uv sync
