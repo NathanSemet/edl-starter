@@ -1,0 +1,19 @@
+name: "Backend Tests"          # 1️⃣ Nom affiché dans GitHub
+
+on:                         # 2️⃣ Quand s'exécute-t-il ?
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:                       # 3️⃣ Les tâches à faire
+  test:
+    runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
+    steps:                  # 5️⃣ Les étapes
+      - uses: actions/checkout@v4
+      - run: actions/setup-python@v5
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - run: cd backend && uv sync
+      - run: cd backend && uv run pytest -v --cov
+      - run: pytest
