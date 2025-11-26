@@ -10,10 +10,17 @@ jobs:                       # 3️⃣ Les tâches à faire
   test:
     runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
     steps:                  # 5️⃣ Les étapes
-      - run: actions/checkout@v4
-      - run: actions/setup-python@v5
-      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      - run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - run: cd backend && uv sync
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
+      - run: 
+          cd backend
+          uv venv
+          .venv\Scripts\activate
+          uv sync
+      - run: 
+          cd backend && uv sync
+          pip install requirements.txt
       - run: cd backend && uv run pytest -v --cov
-      - run: pytest
