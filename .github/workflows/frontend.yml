@@ -10,8 +10,8 @@ jobs:                       # 3️⃣ Les tâches à faire
     steps:                  # 5️⃣ Les étapes
       - name: Setup node.js
         uses: |
-            actions\checkout@v4
-            actions\setup-node@v4
+          actions\checkout@v4
+          actions\setup-node@v4
         with:
             node-version: 18
             cache: 'npm'
@@ -28,5 +28,7 @@ jobs:                       # 3️⃣ Les tâches à faire
             npm test -- --run
             
       - name: Tester le build
-        run: npm run build
+        run: |
+          cd frontend
+          npm run build
 
