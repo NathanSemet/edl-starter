@@ -20,13 +20,13 @@ jobs:                       # 3️⃣ Les tâches à faire
           cache: 'pip' # caching pip dependencies
 
       - name: install UV
-        run: 
+        run: |
           cd backend
           pip install uv
           uv sync
 
       - name: install requirements.txt
-        run: 
+        run: |
           cd backend && uv sync
           pip install requirements.txt
 
