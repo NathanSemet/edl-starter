@@ -34,11 +34,9 @@ def test_root_endpoint(client):
 
 
 def test_health_check(client):
-    """EXEMPLE : Un autre test de point de terminaison GET simple."""
     response = client.get("/health")
-
     assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
+    assert response.json()["status"] == "BROKEN"  # ❌ Faux exprès !
 
 
 def test_create_task(client):
@@ -128,13 +126,28 @@ def test_delete_task(client):
     5. Essayer de GET la tâche à nouveau → devrait retourner 404 (Not Found)
 
     Astuce : Regardez test_get_task_by_id pour voir comment créer et obtenir l'ID
-    """
+    """    
     # TODO : Écrivez votre test ici !
-    pass
+    create_response = client.post("/tasks", json={"title": "Trouve-moi"})
+    task_id = create_response.json()["id"]
+
+    response = client.delete(f"/tasks/{task_id}")
+    assert response.status_code == 204
 
 
-# EXERCICE 2 : Écrire un test pour METTRE À JOUR une tâche
-# Pattern : Créer → Mettre à jour → Vérifier les changements
+def test_delete_nonexistent_task_returns_404(client):
+    """Deleting a task that doesn't exist should return 404."""
+    # TODO: Votre code ici
+    # 1. Essayer de supprimer une tâche avec un ID qui n'existe pas (ex:
+    # 2. Vérifier que ça retourne 404
+    # 3. Vérifier le message d'erreur contient "not found"
+    # EXERCICE 2 : Écrire un test pour METTRE À JOUR une tâche
+    # Pattern : Créer → Mettre à jour → Vérifier les changements
+    response = client.delete(f"/tasks/{9999}")
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"]
+
+
 def test_update_task(client):
     """
     VOTRE TÂCHE : Écrire un test qui met à jour le titre d'une tâche.
@@ -149,8 +162,12 @@ def test_update_task(client):
     Astuce : Les requêtes PUT sont comme les POST, mais elles modifient des données existantes
     """
     # TODO : Écrivez votre test ici !
-    pass
+    create_response = client.post("/tasks", json={"title": "Titre Original"})
+    task_id = create_response.json()["id"]
 
+    response = client.put(f"/tasks/{task_id}", json={"title": "Nouveau Titre"})
+    assert response.status_code == 200
+    assert response.json()["title"] == "Nouveau Titre"
 
 # EXERCICE 3 : Tester la validation - un titre vide devrait échouer
 def test_create_task_empty_title(client):
@@ -180,7 +197,16 @@ def test_update_task_with_invalid_priority(client):
     Rappel : Les priorités valides sont "low", "medium", "high" (voir TaskPriority dans app.py)
     """
     # TODO : Écrivez votre test ici !
-    pass
+    new_task = {
+        "title": "Acheter des courses",
+        "description": "Lait, œufs, pain"
+    }
+
+    create_response = client.post("/tasks", json=new_task)
+    task_id = create_response.json()["id"]
+
+    response = client.put(f"/tasks/{task_id}", json={"priority": "Urgent"})
+    assert response.status_code == 422
 
 
 # EXERCICE 5 : Tester l'erreur 404
@@ -194,6 +220,46 @@ def test_get_nonexistent_task(client):
     """
     # TODO : Écrivez votre test ici !
     pass
+
+def test_filter_by_multiple_criteria(client):
+    """Filtering by status AND priority should work."""
+    # TODO: Votre code ici
+    # 1. Créer 3 tâches avec différents status et priority
+    # 2. Filtrer avec GET /tasks?status=todo&priority=high
+    # 3. Vérifier qu'on reçoit seulement les bonnes tâches
+
+    task_1 = {
+        "title": "Tache 1",
+        "description": "Lait, œufs, pain",
+        "status": "todo",
+        "priority": "low"
+    }
+
+    task_2 = {
+        "title": "Tache 2",
+        "description": "Lait, œufs, pain",
+        "status": "in_progress",
+        "priority": "medium"
+    }
+
+    task_3 = {
+        "title": "Tache 3",
+        "description": "Lait, œufs, pain",
+        "status": "todo",
+        "priority": "high"
+    }
+
+    client.post("/tasks/", json=task_1)
+    client.post("/tasks/", json=task_2)
+    client.post("/tasks/", json=task_3)
+
+    response = client.get("/tasks", params={"status": "todo", "priority": "high"})
+
+    tasks  = response.json()
+
+    assert response.status_code == 200
+    assert tasks[0]["status"] == "todo"
+    assert tasks[0]["priority"] == "high"
 
 
 # =============================================================================
