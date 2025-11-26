@@ -6,6 +6,7 @@ on:                         # 2️⃣ Quand s'exécute-t-il ?
 
 jobs:                       # 3️⃣ Les tâches à faire
   test:
+    name: frontend
     runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
     steps:                  # 5️⃣ Les étapes
       - name: Setup node.js
