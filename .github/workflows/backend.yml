@@ -5,7 +5,8 @@ on:                         # 2️⃣ Quand s'exécute-t-il ?
     branches: [main]
   pull_request:
     branches: [main]
-
+  workflow_call:  
+  
 jobs:                       # 3️⃣ Les tâches à faire
   test:
     runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
