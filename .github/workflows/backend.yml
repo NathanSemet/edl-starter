@@ -10,17 +10,25 @@ jobs:                       # 3️⃣ Les tâches à faire
   test:
     runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
     steps:                  # 5️⃣ Les étapes
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip' # caching pip dependencies
-      - run: 
+
+      - name: install UV
+        run: 
           cd backend
-          uv venv
-          .venv\Scripts\activate
+          pip install uv
           uv sync
-      - run: 
+
+      - name: install requirements.txt
+        run: 
           cd backend && uv sync
           pip install requirements.txt
-      - run: cd backend && uv run pytest -v --cov
+
+      - name: lancement du test
+        run: cd backend && uv run pytest -v --cov
