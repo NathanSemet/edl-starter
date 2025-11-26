@@ -1,0 +1,32 @@
+name: "Frontend Tests"          # 1️⃣ Nom affiché dans GitHub
+
+on:                         # 2️⃣ Quand s'exécute-t-il ?
+  push:
+    branches: [main]
+
+jobs:                       # 3️⃣ Les tâches à faire
+  test:
+    runs-on: ubuntu-latest  # 4️⃣ Machine virtuelle
+    steps:                  # 5️⃣ Les étapes
+      - name: Setup node.js
+        uses: |
+            actions\checkout@v4
+            actions\setup-node@v4
+        with:
+            node-version: 18
+            cache: 'npm'
+            cache-dependency-path: frontend/package-lock.json
+        
+      - name: install dependencies
+        run: |
+          cd frontend 
+          npm ci
+
+      - name: lancement du test 
+        run: |
+            cd frontend
+            npm test -- --run
+            
+      - name: Tester le build
+        run: npm run build
+
